@@ -2,25 +2,48 @@ import { useState } from 'react';
 import './MultiplicationTeacher.css';
 
 function MultiplicationTeacher() {
-  const [num1, setNum1] = useState('413');
-  const [num2, setNum2] = useState('12');
+  // Generate random numbers
+  const generateRandomNumbers = () => {
+    const firstNum = Math.floor(Math.random() * (999 - 10 + 1)) + 10; // 10-999
+    const secondNum = Math.floor(Math.random() * (99 - 1 + 1)) + 1;   // 1-99
+    
+    // Ensure the larger number is num1 (top) and smaller is num2 (bottom)
+    if (firstNum >= secondNum) {
+      return { num1: firstNum.toString(), num2: secondNum.toString() };
+    } else {
+      return { num1: secondNum.toString(), num2: firstNum.toString() };
+    }
+  };
+
+  const initialNumbers = generateRandomNumbers();
+  const [num1, setNum1] = useState(initialNumbers.num1);
+  const [num2, setNum2] = useState(initialNumbers.num2);
   const [currentStep, setCurrentStep] = useState(0);
 
-  // Parse numbers
-  const multiplicand = parseInt(num1) || 0;
-  const multiplier = parseInt(num2) || 0;
+  // Parse numbers and ensure num1 is always the larger number
+  let multiplicand = parseInt(num1) || 0;
+  let multiplier = parseInt(num2) || 0;
+  
+  // Swap if necessary to keep larger number on top
+  if (multiplier > multiplicand) {
+    [multiplicand, multiplier] = [multiplier, multiplicand];
+  }
+  
+  // Update display strings to match the swapped values
+  const displayNum1 = multiplicand.toString();
+  const displayNum2 = multiplier.toString();
   const result = multiplicand * multiplier;
 
   // Calculate steps for Swedish method (column multiplication)
   const calculateSteps = () => {
     const steps = [];
-    const multiplierDigits = num2.split('').reverse();
-    const multiplicandDigits = num1.split('').reverse();
+    const multiplierDigits = displayNum2.split('').reverse();
+    const multiplicandDigits = displayNum1.split('').reverse();
     
     // Step 0: Show the problem
     steps.push({
       title: 'Vi ska räkna ut:',
-      description: `${num1} × ${num2}`,
+      description: `${displayNum1} × ${displayNum2}`,
       type: 'intro'
     });
 
@@ -67,7 +90,7 @@ function MultiplicationTeacher() {
         // The actual position in the final result is digitIndex + rowIndex
         const actualPosition = digitIndex + rowIndex;
         const positionName = ['ental', 'tiotal', 'hundratal', 'tusental', 'tiotusental', 'hundratusental'][actualPosition] || `position ${actualPosition}`;
-        const multiplicandDigitName = num1[num1.length - 1 - digitIndex];
+        const multiplicandDigitName = displayNum1[displayNum1.length - 1 - digitIndex];
         
         let description = `${multiplicandDigitName} × ${digit} = ${mDigit * digit}`;
         if (carry > 0) {
@@ -136,7 +159,7 @@ function MultiplicationTeacher() {
     // Show result
     steps.push({
       title: 'Svar:',
-      description: `${num1} × ${num2} = ${result}`,
+      description: `${displayNum1} × ${displayNum2} = ${result}`,
       type: 'result'
     });
 
@@ -184,7 +207,7 @@ function MultiplicationTeacher() {
     // Get partial products to display based on current step
     const getVisiblePartialProducts = () => {
       const products = [];
-      const multiplierDigits = num2.split('').reverse();
+      const multiplierDigits = displayNum2.split('').reverse();
       
       multiplierDigits.forEach((digit, rowIndex) => {
         // Check if we're at the start-new-row step for this row
@@ -217,7 +240,7 @@ function MultiplicationTeacher() {
           products.push({
             digits: resultDigits.slice(0, lastCompletedDigitIndex + 1).reverse(),
             paddingZeros: paddingZeros,
-            isComplete: lastCompletedDigitIndex >= num1.length,
+            isComplete: lastCompletedDigitIndex >= displayNum1.length,
             rowIndex: rowIndex,
             showOnlyZeros: isStartNewRowStep && lastCompletedDigitIndex < 0
           });
@@ -238,14 +261,18 @@ function MultiplicationTeacher() {
             <div className="carry-row">
               <span className="carry-label">Rest:</span>
               {currentCarries.length > 0 ? (
-                currentCarries.map((carry, idx) => (
-                  <div 
-                    key={idx} 
-                    className={`carry-digit ${carry.used ? 'used' : ''}`}
-                  >
-                    {carry.value}
-                  </div>
-                ))
+                currentCarries.map((carry, idx) => {
+                  // The last carry in the array is the newly created one
+                  const isNewCarry = idx === currentCarries.length - 1 && !carry.used;
+                  return (
+                    <div 
+                      key={idx} 
+                      className={`carry-digit ${carry.used ? 'used' : ''} ${isNewCarry ? 'new-carry' : ''}`}
+                    >
+                      {carry.value}
+                    </div>
+                  );
+                })
               ) : (
                 <div className="carry-empty">Inga rester än</div>
               )}
@@ -258,9 +285,9 @@ function MultiplicationTeacher() {
               <>
                 {/* Show multiplicand */}
                 <div className="number-row multiplicand">
-                  {num1.split('').map((digit, i) => {
+                  {displayNum1.split('').map((digit, i) => {
                     const isActive = currentStepData.type === 'multiply-digit' && 
-                                   i === num1.length - 1 - currentStepData.digitIndex;
+                                   i === displayNum1.length - 1 - currentStepData.digitIndex;
                     return (
                       <div key={i} className={`digit ${isActive ? 'active-digit' : ''}`}>{digit}</div>
                     );
@@ -270,9 +297,9 @@ function MultiplicationTeacher() {
                 {/* Show multiplication sign and multiplier */}
                 <div className="number-row multiplier">
                   <div className="digit operator">×</div>
-                  {num2.split('').map((digit, i) => {
+                  {displayNum2.split('').map((digit, i) => {
                     const isActive = currentStepData.type === 'multiply-digit' && 
-                                   i === num2.length - 1 - currentStepData.rowIndex;
+                                   i === displayNum2.length - 1 - currentStepData.rowIndex;
                     return (
                       <div key={i} className={`digit ${isActive ? 'active-digit' : ''}`}>{digit}</div>
                     );
@@ -297,9 +324,18 @@ function MultiplicationTeacher() {
                   className={`number-row partial-product ${isActive ? 'highlighted' : ''}`}
                 >
                   {!product.showOnlyZeros && product.digits.map((digit, i) => {
-                    const isLastDigit = isActive && i === product.digits.length - 1;
+                    // product.digits is reversed, so first element is the highest position
+                    // We want to mark the digit that was just calculated
+                    // If digitIndex is 0 (ental), we just added the last element in the display (rightmost)
+                    // which is first in the reversed array from the end
+                    const isNewDigit = isActive && 
+                                      currentStepData.type === 'multiply-digit' &&
+                                      i === 0; // The first digit in the reversed array is the newly added one
+                    const isFinalCarry = isActive && 
+                                        currentStepData.type === 'write-final-carry' && 
+                                        i === 0; // The carry digit is added at the front
                     return (
-                      <div key={i} className={`digit ${isLastDigit ? 'active-digit' : ''}`}>{digit}</div>
+                      <div key={i} className={`digit ${isNewDigit || isFinalCarry ? 'active-digit' : ''}`}>{digit}</div>
                     );
                   })}
                   {product.paddingZeros.split('').map((zero, i) => (
@@ -329,8 +365,7 @@ function MultiplicationTeacher() {
   return (
     <div className="multiplication-teacher">
       <header>
-        <h1>🧮 Multiplikation Steg-för-Steg</h1>
-        <p>Lär dig multiplicera som i svenska grundskolan!</p>
+        <h1>🧮 Multiplikation steg för steg</h1>
       </header>
 
       <div className="input-section">

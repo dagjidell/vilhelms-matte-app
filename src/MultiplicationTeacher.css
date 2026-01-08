@@ -199,7 +199,7 @@ header p {
 .partial-product.highlighted .digit {
   background: #16a085;
   color: white;
-  border-color: #16a085;
+  border-color: #155f50;
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(22, 160, 133, 0.3);
 }
@@ -222,6 +222,12 @@ header p {
 
 .carry-digit.used {
   opacity: 0.6;
+}
+
+.carry-digit.new-carry {
+  border: 2px solid #e74c3c;
+  box-shadow: 0 0 12px rgba(231, 76, 60, 0.4);
+  transform: scale(1.1);
 }
 
 .carry-digit.used::after {
