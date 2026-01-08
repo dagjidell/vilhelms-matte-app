@@ -38,6 +38,22 @@ function MultiplicationTeacher() {
       const resultDigits = [];
       const carries = [];
 
+      // If this is not the first row, add an explanation step about the offset zeros
+      if (rowIndex > 0) {
+        const positionNames = ['ental', 'tiotal', 'hundratal', 'tusental'];
+        const zeroDescription = rowIndex === 1 
+          ? `Nu multiplicerar vi med ${digit}, som är värt ${digit}0 eftersom det är tiotalet. Därför börjar vi med en nolla i ental-kolumnen.`
+          : `Nu multiplicerar vi med ${digit}, som är värt ${digit}${'0'.repeat(rowIndex)}. Därför börjar vi med ${rowIndex} ${rowIndex === 1 ? 'nolla' : 'nollor'}.`;
+        
+        steps.push({
+          title: `Börja multiplicera med ${digit}`,
+          description: zeroDescription,
+          type: 'start-new-row',
+          rowIndex: rowIndex,
+          paddingZeros: rowIndex
+        });
+      }
+
       // For each digit in multiplicand (right to left)
       multiplicandDigits.forEach((multiplicandDigit, digitIndex) => {
         const mDigit = parseInt(multiplicandDigit);
@@ -48,7 +64,9 @@ function MultiplicationTeacher() {
         resultDigits.push(resultDigit);
         
         // Create a step for this individual multiplication
-        const positionName = ['ental', 'tiotal', 'hundratal', 'tusental', 'tiotusental'][digitIndex] || `position ${digitIndex}`;
+        // The actual position in the final result is digitIndex + rowIndex
+        const actualPosition = digitIndex + rowIndex;
+        const positionName = ['ental', 'tiotal', 'hundratal', 'tusental', 'tiotusental', 'hundratusental'][actualPosition] || `position ${actualPosition}`;
         const multiplicandDigitName = num1[num1.length - 1 - digitIndex];
         
         let description = `${multiplicandDigitName} × ${digit} = ${mDigit * digit}`;
@@ -58,6 +76,12 @@ function MultiplicationTeacher() {
         description += `. Skriv ${resultDigit} som ${positionName}`;
         if (newCarry > 0) {
           description += ` och rest ${newCarry}`;
+        }
+
+        // Build array of all carries including the new one (even if 0, but we'll filter later)
+        const currentCarries = [...carries];
+        if (newCarry > 0) {
+          currentCarries.push(newCarry);
         }
 
         steps.push({
@@ -73,12 +97,33 @@ function MultiplicationTeacher() {
           resultDigit: resultDigit,
           newCarry: newCarry,
           resultDigits: [...resultDigits],
-          carries: newCarry > 0 ? [...carries, newCarry] : [...carries]
+          allCarries: currentCarries
         });
 
-        carries.push(newCarry);
+        // Update carries array after creating the step
+        if (newCarry > 0) {
+          carries.push(newCarry);
+        }
         carry = newCarry;
       });
+      
+      // If there's a remaining carry after all digits, add it as a final digit
+      if (carry > 0) {
+        resultDigits.push(carry);
+        const finalPosition = multiplicandDigits.length + rowIndex;
+        const positionName = ['ental', 'tiotal', 'hundratal', 'tusental', 'tiotusental', 'hundratusental'][finalPosition] || `position ${finalPosition}`;
+        
+        steps.push({
+          title: `Skriv sista resten`,
+          description: `Resten ${carry} skrivs som ${positionName}`,
+          type: 'write-final-carry',
+          rowIndex: rowIndex,
+          digitIndex: multiplicandDigits.length,
+          finalCarry: carry,
+          resultDigits: [...resultDigits],
+          allCarries: [...carries]
+        });
+      }
     });
 
     // Final step: Add all partial products
@@ -122,10 +167,15 @@ function MultiplicationTeacher() {
     
     // Get carries to display
     const getCurrentCarries = () => {
-      if (currentStepData.type === 'multiply-digit') {
-        return currentStepData.carries.filter(c => c > 0).map((value, idx) => ({
+      if (currentStepData.type === 'multiply-digit' || currentStepData.type === 'write-final-carry') {
+        // Use allCarries which contains all carries generated so far in this row
+        const carriesArray = currentStepData.allCarries || [];
+        // Mark carries as used if their index is less than current digit index
+        // (they were generated in previous steps and have been used)
+        // For write-final-carry, all carries are used
+        return carriesArray.map((value, idx) => ({
           value: value,
-          used: idx < currentStepData.digitIndex
+          used: currentStepData.type === 'write-final-carry' || idx < currentStepData.digitIndex
         }));
       }
       return [];
@@ -137,13 +187,19 @@ function MultiplicationTeacher() {
       const multiplierDigits = num2.split('').reverse();
       
       multiplierDigits.forEach((digit, rowIndex) => {
-        // Find the last multiply-digit step for this row that we've completed
+        // Check if we're at the start-new-row step for this row
+        let isStartNewRowStep = false;
+        if (currentStepData.type === 'start-new-row' && currentStepData.rowIndex === rowIndex) {
+          isStartNewRowStep = true;
+        }
+        
+        // Find the last multiply-digit or write-final-carry step for this row that we've completed
         let lastCompletedDigitIndex = -1;
         const resultDigits = [];
         
         for (let i = 0; i <= currentStep; i++) {
           const step = steps[i];
-          if (step.type === 'multiply-digit' && step.rowIndex === rowIndex) {
+          if ((step.type === 'multiply-digit' || step.type === 'write-final-carry') && step.rowIndex === rowIndex) {
             lastCompletedDigitIndex = step.digitIndex;
             // Build up the result digits from all completed steps in this row
             if (step.resultDigits) {
@@ -154,14 +210,16 @@ function MultiplicationTeacher() {
           }
         }
         
-        if (lastCompletedDigitIndex >= 0) {
+        // Show the row if we have completed digits OR if we're at start-new-row step
+        if (lastCompletedDigitIndex >= 0 || isStartNewRowStep) {
           // Show the partial result built so far
           const paddingZeros = '0'.repeat(rowIndex);
           products.push({
             digits: resultDigits.slice(0, lastCompletedDigitIndex + 1).reverse(),
             paddingZeros: paddingZeros,
-            isComplete: lastCompletedDigitIndex >= num1.length - 1,
-            rowIndex: rowIndex
+            isComplete: lastCompletedDigitIndex >= num1.length,
+            rowIndex: rowIndex,
+            showOnlyZeros: isStartNewRowStep && lastCompletedDigitIndex < 0
           });
         }
       });
@@ -175,43 +233,62 @@ function MultiplicationTeacher() {
     return (
       <div className="visualization">
         <div className="multiplication-container">
-          {/* Show carry digits above the calculation */}
-          {currentCarries.length > 0 && (
+          {/* Show carry digits above the calculation when in multiply-digit mode */}
+          {(currentStepData.type === 'multiply-digit' || currentStepData.type === 'write-final-carry') && (
             <div className="carry-row">
               <span className="carry-label">Rest:</span>
-              {currentCarries.map((carry, idx) => (
-                <div 
-                  key={idx} 
-                  className={`carry-digit ${carry.used ? 'used' : ''}`}
-                >
-                  {carry.value}
-                </div>
-              ))}
+              {currentCarries.length > 0 ? (
+                currentCarries.map((carry, idx) => (
+                  <div 
+                    key={idx} 
+                    className={`carry-digit ${carry.used ? 'used' : ''}`}
+                  >
+                    {carry.value}
+                  </div>
+                ))
+              ) : (
+                <div className="carry-empty">Inga rester än</div>
+              )}
             </div>
           )}
           
           <div className="multiplication-grid">
-            {/* Show multiplicand */}
-            <div className="number-row multiplicand">
-              {num1.split('').map((digit, i) => (
-                <div key={i} className="digit">{digit}</div>
-              ))}
-            </div>
+            {/* Show multiplicand and multiplier from setup step onwards */}
+            {currentStepData.type !== 'intro' && (
+              <>
+                {/* Show multiplicand */}
+                <div className="number-row multiplicand">
+                  {num1.split('').map((digit, i) => {
+                    const isActive = currentStepData.type === 'multiply-digit' && 
+                                   i === num1.length - 1 - currentStepData.digitIndex;
+                    return (
+                      <div key={i} className={`digit ${isActive ? 'active-digit' : ''}`}>{digit}</div>
+                    );
+                  })}
+                </div>
 
-            {/* Show multiplication sign and multiplier */}
-            <div className="number-row multiplier">
-              <div className="digit operator">×</div>
-              {num2.split('').map((digit, i) => (
-                <div key={i} className="digit">{digit}</div>
-              ))}
-            </div>
+                {/* Show multiplication sign and multiplier */}
+                <div className="number-row multiplier">
+                  <div className="digit operator">×</div>
+                  {num2.split('').map((digit, i) => {
+                    const isActive = currentStepData.type === 'multiply-digit' && 
+                                   i === num2.length - 1 - currentStepData.rowIndex;
+                    return (
+                      <div key={i} className={`digit ${isActive ? 'active-digit' : ''}`}>{digit}</div>
+                    );
+                  })}
+                </div>
 
-            {/* Show line */}
-            <div className="division-line"></div>
+                {/* Show line */}
+                <div className="division-line"></div>
+              </>
+            )}
 
             {/* Show partial products being built up */}
             {visibleProducts.map((product, idx) => {
-              const isActive = currentStepData.type === 'multiply-digit' && 
+              const isActive = (currentStepData.type === 'multiply-digit' || 
+                              currentStepData.type === 'write-final-carry' || 
+                              currentStepData.type === 'start-new-row') && 
                              currentStepData.rowIndex === product.rowIndex;
               
               return (
@@ -219,11 +296,14 @@ function MultiplicationTeacher() {
                   key={idx} 
                   className={`number-row partial-product ${isActive ? 'highlighted' : ''}`}
                 >
-                  {product.digits.map((digit, i) => (
-                    <div key={i} className="digit">{digit}</div>
-                  ))}
+                  {!product.showOnlyZeros && product.digits.map((digit, i) => {
+                    const isLastDigit = isActive && i === product.digits.length - 1;
+                    return (
+                      <div key={i} className={`digit ${isLastDigit ? 'active-digit' : ''}`}>{digit}</div>
+                    );
+                  })}
                   {product.paddingZeros.split('').map((zero, i) => (
-                    <div key={`zero-${i}`} className="digit zero">{zero}</div>
+                    <div key={`zero-${i}`} className={`digit zero ${currentStepData.type === 'start-new-row' && currentStepData.rowIndex === product.rowIndex ? 'active-digit' : ''}`}>{zero}</div>
                   ))}
                 </div>
               );
