@@ -300,8 +300,7 @@ export default function AdditionTeacher() {
     <div className="addition-teacher">
       <div className="teacher-card">
         <header>
-          <h1>Addition - Svensk metod</h1>
-          <p>Lär dig ställa upp och lösa addition steg för steg</p>
+          <h1>Addition steg för steg</h1>
         </header>
 
         <div className="input-section">
