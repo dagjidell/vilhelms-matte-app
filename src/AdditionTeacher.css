@@ -214,6 +214,10 @@ header p {
   border: none;
 }
 
+.result-row .active-digit {
+    border-color: #155f50 !important; 
+}
+
 .digit.active-digit {
   border: 4px solid #e74c3c;
   border-radius: 8px;
