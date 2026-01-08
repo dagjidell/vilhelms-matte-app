@@ -119,7 +119,8 @@ export default function AdditionTeacher() {
       title: 'Klart!',
       description: `${displayNum1} + ${displayNum2} = ${result}`,
       type: 'result',
-      resultDigits: resultDigits
+      resultDigits: resultDigits,
+      carries: [...carries]
     });
 
     return steps;
@@ -180,6 +181,21 @@ export default function AdditionTeacher() {
             value: currentStepData.newCarry,
             used: false,
             isNew: true
+          };
+        }
+      }
+      return carries;
+    }
+    if (currentStepData.type === 'result' && currentStepData.carries) {
+      const carries = [];
+      const maxLength = Math.max(displayNum1.length, displayNum2.length);
+      
+      // Show all carries as used in the final result
+      for (let i = 0; i <= maxLength; i++) {
+        if (currentStepData.carries[i]) {
+          carries[i] = {
+            value: currentStepData.carries[i],
+            used: true
           };
         }
       }
@@ -275,7 +291,6 @@ export default function AdditionTeacher() {
           {/* Result */}
           {visibleResult.length > 0 && (
             <div className="number-row result-row">
-              <div className="digit empty"></div>
               {visibleResult.slice().reverse().map((d, i) => {
                 const columnIndex = visibleResult.length - 1 - i;
                 const isNew = currentStepData.type === 'add-column' && 
