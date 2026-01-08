@@ -365,7 +365,7 @@ function MultiplicationTeacher() {
   return (
     <div className="multiplication-teacher">
       <header>
-        <h1>🧮 Multiplikation steg för steg</h1>
+        <h1>Multiplikation steg för steg</h1>
       </header>
 
       <div className="input-section">

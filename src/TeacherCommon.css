@@ -1,0 +1,49 @@
+.teacher-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.teacher-card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.teacher-card h1 {
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+}
+
+.coming-soon {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #7f8c8d;
+  margin: 40px 0;
+}
+
+.placeholder-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.placeholder-box {
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.placeholder-box span {
+  font-size: 8rem;
+  color: white;
+  font-weight: bold;
+}
