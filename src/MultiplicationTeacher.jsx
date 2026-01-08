@@ -15,6 +15,7 @@ function MultiplicationTeacher() {
   const calculateSteps = () => {
     const steps = [];
     const multiplierDigits = num2.split('').reverse();
+    const multiplicandDigits = num1.split('').reverse();
     
     // Step 0: Show the problem
     steps.push({
@@ -30,18 +31,53 @@ function MultiplicationTeacher() {
       type: 'setup'
     });
 
-    // Calculate each partial product
-    multiplierDigits.forEach((digit, index) => {
-      const digitValue = parseInt(digit);
-      const partialProduct = multiplicand * digitValue;
-      
-      steps.push({
-        title: `Steg ${index + 1}: Multiplicera med ${digit}`,
-        description: `${num1} × ${digit} = ${partialProduct}`,
-        digit: digit,
-        position: index,
-        partialProduct: partialProduct,
-        type: 'multiply'
+    // Create granular steps for each multiplier digit
+    multiplierDigits.forEach((multiplierDigit, rowIndex) => {
+      const digit = parseInt(multiplierDigit);
+      let carry = 0;
+      const resultDigits = [];
+      const carries = [];
+
+      // For each digit in multiplicand (right to left)
+      multiplicandDigits.forEach((multiplicandDigit, digitIndex) => {
+        const mDigit = parseInt(multiplicandDigit);
+        const product = mDigit * digit + carry;
+        const resultDigit = product % 10;
+        const newCarry = Math.floor(product / 10);
+
+        resultDigits.push(resultDigit);
+        
+        // Create a step for this individual multiplication
+        const positionName = ['ental', 'tiotal', 'hundratal', 'tusental', 'tiotusental'][digitIndex] || `position ${digitIndex}`;
+        const multiplicandDigitName = num1[num1.length - 1 - digitIndex];
+        
+        let description = `${multiplicandDigitName} × ${digit} = ${mDigit * digit}`;
+        if (carry > 0) {
+          description += ` + ${carry} (rest) = ${product}`;
+        }
+        description += `. Skriv ${resultDigit} som ${positionName}`;
+        if (newCarry > 0) {
+          description += ` och rest ${newCarry}`;
+        }
+
+        steps.push({
+          title: `Multiplicera ${multiplicandDigitName} × ${digit}`,
+          description: description,
+          type: 'multiply-digit',
+          rowIndex: rowIndex,
+          digitIndex: digitIndex,
+          multiplierDigit: digit,
+          multiplicandDigit: mDigit,
+          previousCarry: carry,
+          product: product,
+          resultDigit: resultDigit,
+          newCarry: newCarry,
+          resultDigits: [...resultDigits],
+          carries: newCarry > 0 ? [...carries, newCarry] : [...carries]
+        });
+
+        carries.push(newCarry);
+        carry = newCarry;
       });
     });
 
@@ -64,26 +100,6 @@ function MultiplicationTeacher() {
 
   const steps = calculateSteps();
 
-  // Calculate all partial products for display
-  const getPartialProducts = () => {
-    const products = [];
-    const multiplierDigits = num2.split('').reverse();
-    
-    multiplierDigits.forEach((digit, index) => {
-      const digitValue = parseInt(digit);
-      const partialProduct = multiplicand * digitValue;
-      products.push({
-        value: partialProduct,
-        position: index,
-        digit: digitValue
-      });
-    });
-    
-    return products;
-  };
-
-  const partialProducts = getPartialProducts();
-
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
@@ -102,51 +118,116 @@ function MultiplicationTeacher() {
 
   // Render the multiplication visualization
   const renderVisualization = () => {
+    const currentStepData = steps[currentStep];
+    
+    // Get carries to display
+    const getCurrentCarries = () => {
+      if (currentStepData.type === 'multiply-digit') {
+        return currentStepData.carries.filter(c => c > 0).map((value, idx) => ({
+          value: value,
+          used: idx < currentStepData.digitIndex
+        }));
+      }
+      return [];
+    };
+
+    // Get partial products to display based on current step
+    const getVisiblePartialProducts = () => {
+      const products = [];
+      const multiplierDigits = num2.split('').reverse();
+      
+      multiplierDigits.forEach((digit, rowIndex) => {
+        // Find the last multiply-digit step for this row that we've completed
+        let lastCompletedDigitIndex = -1;
+        const resultDigits = [];
+        
+        for (let i = 0; i <= currentStep; i++) {
+          const step = steps[i];
+          if (step.type === 'multiply-digit' && step.rowIndex === rowIndex) {
+            lastCompletedDigitIndex = step.digitIndex;
+            // Build up the result digits from all completed steps in this row
+            if (step.resultDigits) {
+              step.resultDigits.forEach((d, idx) => {
+                resultDigits[idx] = d;
+              });
+            }
+          }
+        }
+        
+        if (lastCompletedDigitIndex >= 0) {
+          // Show the partial result built so far
+          const paddingZeros = '0'.repeat(rowIndex);
+          products.push({
+            digits: resultDigits.slice(0, lastCompletedDigitIndex + 1).reverse(),
+            paddingZeros: paddingZeros,
+            isComplete: lastCompletedDigitIndex >= num1.length - 1,
+            rowIndex: rowIndex
+          });
+        }
+      });
+      
+      return products;
+    };
+
+    const currentCarries = getCurrentCarries();
+    const visibleProducts = getVisiblePartialProducts();
+    
     return (
       <div className="visualization">
-        <div className="multiplication-grid">
-          {/* Show multiplicand */}
-          <div className="number-row multiplicand">
-            {num1.split('').map((digit, i) => (
-              <div key={i} className="digit">{digit}</div>
-            ))}
-          </div>
+        <div className="multiplication-container">
+          {/* Show carry digits above the calculation */}
+          {currentCarries.length > 0 && (
+            <div className="carry-row">
+              <span className="carry-label">Rest:</span>
+              {currentCarries.map((carry, idx) => (
+                <div 
+                  key={idx} 
+                  className={`carry-digit ${carry.used ? 'used' : ''}`}
+                >
+                  {carry.value}
+                </div>
+              ))}
+            </div>
+          )}
+          
+          <div className="multiplication-grid">
+            {/* Show multiplicand */}
+            <div className="number-row multiplicand">
+              {num1.split('').map((digit, i) => (
+                <div key={i} className="digit">{digit}</div>
+              ))}
+            </div>
 
-          {/* Show multiplication sign and multiplier */}
-          <div className="number-row multiplier">
-            <div className="digit operator">×</div>
-            {num2.split('').map((digit, i) => (
-              <div key={i} className="digit">{digit}</div>
-            ))}
-          </div>
+            {/* Show multiplication sign and multiplier */}
+            <div className="number-row multiplier">
+              <div className="digit operator">×</div>
+              {num2.split('').map((digit, i) => (
+                <div key={i} className="digit">{digit}</div>
+              ))}
+            </div>
 
-          {/* Show line */}
-          <div className="division-line"></div>
+            {/* Show line */}
+            <div className="division-line"></div>
 
-          {/* Show partial products based on current step */}
-          {currentStep >= 3 && partialProducts.map((product, idx) => {
-            const shouldShow = currentStep >= 3 + idx;
-            const isHighlighted = currentStep === 3 + idx;
-            
-            if (!shouldShow) return null;
-
-            const productStr = product.value.toString();
-            const paddingZeros = '0'.repeat(product.position);
-            
-            return (
-              <div 
-                key={idx} 
-                className={`number-row partial-product ${isHighlighted ? 'highlighted' : ''}`}
-              >
-                {productStr.split('').map((digit, i) => (
-                  <div key={i} className="digit">{digit}</div>
-                ))}
-                {paddingZeros.split('').map((zero, i) => (
-                  <div key={`zero-${i}`} className="digit zero">{zero}</div>
-                ))}
-              </div>
-            );
-          })}
+            {/* Show partial products being built up */}
+            {visibleProducts.map((product, idx) => {
+              const isActive = currentStepData.type === 'multiply-digit' && 
+                             currentStepData.rowIndex === product.rowIndex;
+              
+              return (
+                <div 
+                  key={idx} 
+                  className={`number-row partial-product ${isActive ? 'highlighted' : ''}`}
+                >
+                  {product.digits.map((digit, i) => (
+                    <div key={i} className="digit">{digit}</div>
+                  ))}
+                  {product.paddingZeros.split('').map((zero, i) => (
+                    <div key={`zero-${i}`} className="digit zero">{zero}</div>
+                  ))}
+                </div>
+              );
+            })}
 
           {/* Show sum line and result */}
           {currentStep >= steps.length - 2 && (
@@ -159,6 +240,7 @@ function MultiplicationTeacher() {
               </div>
             </>
           )}
+          </div>
         </div>
       </div>
     );
