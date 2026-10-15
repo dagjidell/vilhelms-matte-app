@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import './TeacherCommon.css';
 import './MultiplicationTeacher.css';
 
 function MultiplicationTeacher() {
@@ -363,7 +364,7 @@ function MultiplicationTeacher() {
   };
 
   return (
-    <div className="multiplication-teacher">
+    <div className="teacher multiplication-teacher">
       <header>
         <h1>Multiplikation steg för steg</h1>
       </header>
