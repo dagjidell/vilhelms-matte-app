@@ -1,0 +1,78 @@
+.subtraction-teacher .sb-grid {
+  display: grid;
+  grid-template-rows: calc(var(--cell) * 1.05);
+  row-gap: var(--gap);
+  column-gap: var(--gap);
+  align-items: center;
+}
+
+.subtraction-teacher .sb-marks {
+  height: 100%;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  font-family: system-ui, sans-serif;
+  font-size: 0.7em;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.subtraction-teacher .sb-mark {
+  padding: 0 3px;
+  color: var(--carry-text);
+  background: var(--carry-bg);
+  border: 1px solid var(--carry-border);
+  border-radius: 3px;
+}
+
+.subtraction-teacher .sb-mark + .sb-mark {
+  margin-bottom: 1px;
+}
+
+.subtraction-teacher .sb-mark.crossed {
+  color: var(--muted);
+  background: transparent;
+  border-color: transparent;
+  text-decoration: line-through;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+}
+
+.subtraction-teacher .sb-mark.new {
+  outline: 2px solid var(--accent);
+}
+
+.subtraction-teacher .sb-top {
+  background: var(--num1-bg);
+  border-color: var(--num1-border);
+}
+
+.subtraction-teacher .sb-bottom {
+  background: var(--num2-bg);
+  border-color: var(--num2-border);
+}
+
+.subtraction-teacher .sb-crossed {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+}
+
+.subtraction-teacher .sb-line {
+  grid-column: 1 / -1;
+  height: 2px;
+  background: var(--text-soft);
+  border-radius: 1px;
+}
+
+.subtraction-teacher .sb-result {
+  background: var(--part-bg);
+  border-color: var(--part-border);
+}
+
+.subtraction-teacher .sb-result.final {
+  background: var(--result);
+  border-color: var(--result);
+  color: white;
+}
