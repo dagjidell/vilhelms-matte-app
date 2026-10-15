@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './MultiplicationTeacher.css';
+import './TeacherCommon.css';
 import './DivisionTeacher.css';
 
 const MAX_EXTRA_DECIMALS = 3;
@@ -340,7 +340,7 @@ export default function DivisionTeacher() {
   const step = steps[currentStep];
 
   return (
-    <div className="division-teacher">
+    <div className="teacher division-teacher">
       <header>
         <h1>Division steg för steg</h1>
         <p>Kort division</p>

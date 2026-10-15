@@ -1,422 +1,160 @@
-.addition-teacher {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-}
-
-.teacher-card {
-  background: transparent;
-  border-radius: 0;
-  padding: 0;
-  box-shadow: none;
-}
-
-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-header h1 {
-  font-size: 2rem;
-  color: #2c3e50;
-  margin-bottom: 10px;
-}
-
-header p {
-  font-size: 1.1rem;
-  color: #7f8c8d;
-}
-
-.input-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 30px;
-  flex-wrap: wrap;
-}
-
-.input-group {
+.addition-teacher .addition-grid {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--gap);
 }
 
-.input-group label {
-  font-weight: 600;
-  color: #34495e;
-  font-size: 0.9rem;
-}
-
-.input-group input {
-  padding: 12px;
-  font-size: 1.5rem;
-  border: 2px solid #27ae60;
-  border-radius: 8px;
-  width: 150px;
-  text-align: center;
-  font-weight: bold;
-}
-
-.input-group input:focus {
-  outline: none;
-  border-color: #229954;
-  box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
-}
-
-.plus-symbol {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #27ae60;
-  margin-top: 20px;
-}
-
-.step-info {
-  text-align: center;
-  margin-bottom: 30px;
-  background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
-  color: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(86, 171, 47, 0.4);
-}
-
-.step-info h2 {
-  margin: 0 0 10px 0;
-  font-size: 1.5rem;
-}
-
-.step-info p {
-  margin: 0;
-  font-size: 1.1rem;
-  opacity: 0.95;
-}
-
-.visualization {
-  display: flex;
-  justify-content: center;
-  margin: 40px 0;
-  padding: 30px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  min-height: 300px;
-}
-
-.addition-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-}
-
-.carry-section {
+.addition-teacher .carry-section {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 5px;
+  gap: 2px;
   width: 100%;
 }
 
-.carry-label {
+.addition-teacher .carry-label {
+  font-family: system-ui, sans-serif;
   font-weight: 600;
-  color: #856404;
-  font-size: 0.85rem;
-  padding-left: 5px;
+  font-size: 0.75rem;
+  color: var(--carry-text);
+  padding-left: 4px;
 }
 
-.carry-number-row {
-  background: #fff9e6;
-  border: 2px dashed #ffc107;
-  border-radius: 8px;
-  padding: 5px 0;
+.addition-teacher .carry-number-row {
   width: 100%;
+  padding: 3px 0;
+  background: var(--carry-bg);
+  border: 1px dashed var(--carry-border);
+  border-radius: 8px;
 }
 
-.carry-digit {
-  width: 35px;
-  height: 35px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff3cd;
-  border: 2px solid #ffc107;
-  border-radius: 6px;
-  font-weight: bold;
-  color: #856404;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+.addition-teacher .digit.carry-digit {
+  height: calc(var(--cell) * 0.75);
+  font-size: 0.7em;
+  background: var(--surface);
+  border-color: var(--carry-border);
+  color: var(--carry-text);
   position: relative;
 }
 
-.carry-digit.empty {
+.addition-teacher .digit.carry-digit.empty {
   background: transparent;
   border-color: transparent;
 }
 
-.carry-digit.used {
-  opacity: 0.6;
-  position: relative;
+.addition-teacher .carry-digit.used {
+  opacity: 0.5;
 }
 
-.carry-digit.used::after {
+.addition-teacher .carry-digit.used::after {
   content: '';
   position: absolute;
-  width: 100%;
-  height: 2px;
-  background: #dc3545;
-  top: 50%;
   left: 0;
-  transform: translateY(-50%);
-}
-
-.carry-digit.new-carry {
-  border: 2px solid #e74c3c;
-  box-shadow: 0 0 12px rgba(231, 76, 60, 0.4);
-  transform: scale(1.1);
-}
-
-.addition-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-family: 'Courier New', monospace;
-  font-size: 1.5rem;
-}
-
-.number-row {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  min-height: 50px;
-  align-items: center;
-}
-
-.digit {
-  width: 45px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: white;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-weight: bold;
-  color: #2c3e50;
-  transition: all 0.3s ease;
-}
-
-.digit.empty {
-  background: transparent;
-  border: none;
-}
-
-.result-row .active-digit {
-    border-color: #155f50 !important; 
-}
-
-.digit.active-digit {
-  border: 4px solid #e74c3c;
-  border-radius: 8px;
-  box-shadow: 0 0 12px rgba(231, 76, 60, 0.4);
-  transform: scale(1.08);
-  z-index: 10;
-  position: relative;
-}
-
-.digit.operator {
-  background: #27ae60;
-  color: #2c3e50;
-  border-color: #27ae60;
-  font-size: 1.3em;
-}
-
-.top-number .digit {
-  background: #e8f8f5;
-  border-color: #27ae60;
-}
-
-.bottom-number .digit:not(.operator) {
-  background: #fef5e7;
-  border-color: #f39c12;
-}
-
-.result-row .digit {
-  background: #27ae60;
-  color: white;
-  border-color: #27ae60;
-  font-size: 1.1em;
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
-}
-
-.line-row {
-  padding: 0;
-  min-height: 10px;
-}
-
-.line {
+  top: 50%;
   width: 100%;
-  height: 3px;
-  background: #2c3e50;
-  border-radius: 2px;
+  height: 1px;
+  background: var(--muted);
 }
 
-.controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  margin: 30px 0;
+.addition-teacher .carry-digit.new-carry {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
-.control-btn {
-  padding: 12px 24px;
-  font-size: 1rem;
+.addition-teacher .digit.empty {
+  background: transparent;
+  border-color: transparent;
+}
+
+.addition-teacher .top-number .digit:not(.empty) {
+  background: var(--num1-bg);
+  border-color: var(--num1-border);
+}
+
+.addition-teacher .bottom-number .digit:not(.operator):not(.empty) {
+  background: var(--num2-bg);
+  border-color: var(--num2-border);
+}
+
+.addition-teacher .result-row .digit {
+  background: var(--result);
+  border-color: var(--result);
+  color: white;
+}
+
+.addition-teacher .line {
+  flex: 1;
+  height: 2px;
+  background: var(--text-soft);
+  border-radius: 1px;
+}
+
+.addition-teacher .line-row .digit.empty {
+  height: 4px;
+}
+
+.addition-teacher .control-btn {
+  padding: 10px 18px;
+  font-size: 0.95rem;
   font-weight: 600;
-  background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+  background: var(--primary);
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(86, 171, 47, 0.3);
+  transition: background 0.2s ease;
 }
 
-.control-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(86, 171, 47, 0.4);
+.addition-teacher .control-btn:hover:not(:disabled) {
+  background: var(--primary-hover);
 }
 
-.control-btn:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.control-btn:disabled {
-  background: #bdc3c7;
+.addition-teacher .control-btn:disabled {
+  opacity: 0.45;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
-.step-counter {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #2c3e50;
-  padding: 10px 20px;
-  background: #ecf0f1;
-  border-radius: 8px;
+.addition-teacher .step-counter {
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding: 0 6px;
+  white-space: nowrap;
 }
 
-.reset-section {
+.addition-teacher .reset-section {
   text-align: center;
-  margin-top: 20px;
+  margin-top: -4px;
 }
 
-.reset-btn {
-  padding: 12px 30px;
-  font-size: 1rem;
+.addition-teacher .reset-btn {
+  padding: 6px 14px;
+  font-size: 0.85rem;
   font-weight: 600;
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
+  background: var(--neutral-soft);
+  color: var(--text-soft);
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+  transition: background 0.2s ease;
 }
 
-.reset-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
-}
-
-.reset-btn:active {
-  transform: translateY(0);
+.addition-teacher .reset-btn:hover {
+  background: var(--neutral-hover);
 }
 
 @media (max-width: 768px) {
-  .addition-teacher {
-    padding: 15px;
+  .addition-teacher .controls {
+    gap: 4px;
   }
 
-  header h1 {
-    font-size: 1.5rem;
-  }
-
-  header p {
-    font-size: 1rem;
-  }
-
-  .input-section {
-    gap: 10px;
-  }
-
-  .input-group input {
-    width: 120px;
-    font-size: 1.3rem;
-    padding: 10px;
-  }
-
-  .plus-symbol {
-    font-size: 1.5rem;
-    margin-top: 15px;
-  }
-
-  .step-info h2 {
-    font-size: 1.2rem;
-  }
-
-  .step-info p {
-    font-size: 1rem;
-  }
-
-  .visualization {
-    padding: 20px 10px;
-  }
-
-  .addition-grid {
-    font-size: 1.2rem;
-  }
-
-  .digit {
-    width: 35px;
-    height: 40px;
-  }
-
-  .carry-digit {
-    width: 28px;
-    height: 28px;
+  .addition-teacher .control-btn {
+    flex: 1;
+    padding: 10px 6px;
     font-size: 0.85rem;
   }
 
-  .carry-number-row {
-    gap: 5px;
-    padding: 8px 12px;
-  }
-
-  .carry-label {
-    font-size: 0.8rem;
-  }
-
-  .number-row {
-    gap: 5px;
-    min-height: 40px;
-  }
-
-  .control-btn {
-    padding: 12px 20px;
-    font-size: 0.95rem;
-  }
-
-  .controls {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .control-btn {
-    width: 100%;
+  .addition-teacher .step-counter {
+    font-size: 0.75rem;
+    padding: 0 2px;
   }
 }

@@ -1,49 +1,334 @@
+/* Shared layout: the whole teacher view fits in the viewport, the calculation area takes the remaining space */
+.teacher {
+  --cell: clamp(24px, min(8.5vw, 5.5vh), 46px);
+  --cell-h: calc(var(--cell) * 1.1);
+  --gap: calc(var(--cell) * 0.15);
+  width: 100%;
+  max-width: 800px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(46, 58, 70, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}
+
+.teacher > * {
+  flex: none;
+}
+
+.teacher header {
+  text-align: center;
+}
+
+.teacher header h1 {
+  font-size: 1.4rem;
+  color: var(--text);
+}
+
+.teacher header p {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.teacher .input-section {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.teacher .input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.teacher .input-group label {
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.teacher .input-group input {
+  width: 130px;
+  padding: 6px 8px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.teacher .input-group input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.teacher .multiply-symbol,
+.teacher .plus-symbol {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--muted);
+  padding-bottom: 4px;
+}
+
+.teacher .step-info {
+  text-align: center;
+  background: var(--primary-soft);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+
+.teacher .step-info h2 {
+  margin: 0 0 4px 0;
+  font-size: 1.1rem;
+  color: var(--primary-hover);
+}
+
+.teacher .step-info p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--text-soft);
+}
+
+.teacher > .visualization {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  padding: 12px;
+  background: var(--canvas);
+  border-radius: 10px;
+  font-family: 'Courier New', monospace;
+  font-size: calc(var(--cell) * 0.55);
+}
+
+/* margin: auto centers without clipping when the content overflows */
+.teacher .visualization > * {
+  margin: auto;
+}
+
+.teacher .number-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--gap);
+}
+
+.teacher .digit {
+  width: var(--cell);
+  height: var(--cell-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-weight: 700;
+  color: var(--text);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.teacher .digit.active-digit {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  position: relative;
+  z-index: 1;
+}
+
+.teacher .digit.zero {
+  background: var(--zero-bg);
+  color: var(--muted);
+}
+
+.teacher .digit.operator {
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+}
+
+.teacher .controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.teacher .btn {
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.teacher .btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.teacher .btn-next {
+  background: var(--primary);
+  color: white;
+}
+
+.teacher .btn-next:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.teacher .btn-prev,
+.teacher .btn-reset {
+  background: var(--neutral-soft);
+  color: var(--text-soft);
+}
+
+.teacher .btn-prev:hover:not(:disabled),
+.teacher .btn-reset:hover {
+  background: var(--neutral-hover);
+}
+
+.teacher .progress {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: -4px;
+}
+
+@media (max-width: 768px) {
+  .teacher {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  /* The active nav button already shows which operation this is */
+  .teacher header {
+    display: none;
+  }
+
+  .teacher .input-section {
+    gap: 8px;
+  }
+
+  .teacher .input-group {
+    gap: 2px;
+  }
+
+  .teacher .input-group label {
+    font-size: 0.7rem;
+  }
+
+  .teacher .input-group input {
+    width: 100px;
+    padding: 4px 6px;
+    font-size: 1.05rem;
+  }
+
+  .teacher .multiply-symbol,
+  .teacher .plus-symbol {
+    font-size: 1.2rem;
+  }
+
+  .teacher .step-info {
+    padding: 8px 10px;
+  }
+
+  .teacher .step-info h2 {
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+  }
+
+  .teacher .step-info p {
+    font-size: 0.85rem;
+    line-height: 1.35;
+  }
+
+  .teacher > .visualization {
+    padding: 8px;
+  }
+
+  .teacher .controls {
+    gap: 6px;
+  }
+
+  .teacher .btn {
+    flex: 1 1 auto;
+    padding: 10px 8px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .teacher .progress {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-height: 700px) {
+  .teacher header {
+    display: none;
+  }
+}
+
+/* Placeholder for operations that are not finished yet */
 .teacher-container {
-  max-width: 1400px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 800px;
+  height: 100%;
 }
 
 .teacher-card {
-  background: white;
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  height: 100%;
+  overflow: auto;
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(46, 58, 70, 0.08);
 }
 
 .teacher-card h1 {
-  color: #2c3e50;
+  color: var(--text);
   text-align: center;
-  margin-bottom: 30px;
-  font-size: 2.5rem;
+  font-size: 1.6rem;
 }
 
 .coming-soon {
   text-align: center;
-  font-size: 1.5rem;
-  color: #7f8c8d;
-  margin: 40px 0;
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin: 16px 0;
 }
 
 .placeholder-content {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 300px;
+  padding: 16px 0;
 }
 
 .placeholder-box {
-  width: 200px;
-  height: 200px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 20px;
+  width: 140px;
+  height: 140px;
+  background: var(--primary-soft);
+  border-radius: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .placeholder-box span {
-  font-size: 8rem;
-  color: white;
-  font-weight: bold;
+  font-size: 5rem;
+  color: var(--primary);
+  font-weight: 700;
 }

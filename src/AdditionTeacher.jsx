@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import './TeacherCommon.css';
 import './AdditionTeacher.css';
 
 export default function AdditionTeacher() {
@@ -312,72 +313,70 @@ export default function AdditionTeacher() {
   };
 
   return (
-    <div className="addition-teacher">
-      <div className="teacher-card">
-        <header>
-          <h1>Addition steg för steg</h1>
-        </header>
+    <div className="teacher addition-teacher">
+      <header>
+        <h1>Addition steg för steg</h1>
+      </header>
 
-        <div className="input-section">
-          <div className="input-group">
-            <label>Första talet:</label>
-            <input
-              type="number"
-              value={num1}
-              onChange={(e) => {
-                setNum1(e.target.value);
-                setCurrentStep(0);
-              }}
-            />
-          </div>
-          <div className="plus-symbol">+</div>
-          <div className="input-group">
-            <label>Andra talet:</label>
-            <input
-              type="number"
-              value={num2}
-              onChange={(e) => {
-                setNum2(e.target.value);
-                setCurrentStep(0);
-              }}
-            />
-          </div>
+      <div className="input-section">
+        <div className="input-group">
+          <label>Första talet:</label>
+          <input
+            type="number"
+            value={num1}
+            onChange={(e) => {
+              setNum1(e.target.value);
+              setCurrentStep(0);
+            }}
+          />
         </div>
+        <div className="plus-symbol">+</div>
+        <div className="input-group">
+          <label>Andra talet:</label>
+          <input
+            type="number"
+            value={num2}
+            onChange={(e) => {
+              setNum2(e.target.value);
+              setCurrentStep(0);
+            }}
+          />
+        </div>
+      </div>
 
-        <div className="step-info">
-          <h2>{currentStepData.title}</h2>
-          <p>{currentStepData.description}</p>
-        </div>
+      <div className="step-info">
+        <h2>{currentStepData.title}</h2>
+        <p>{currentStepData.description}</p>
+      </div>
 
-        <div className="visualization">
-          {renderAddition()}
-        </div>
+      <div className="visualization">
+        {renderAddition()}
+      </div>
 
-        <div className="controls">
-          <button 
-            onClick={handlePrevious} 
-            disabled={currentStep === 0}
-            className="control-btn"
-          >
-            ← Föregående
-          </button>
-          <div className="step-counter">
-            Steg {currentStep + 1} av {steps.length}
-          </div>
-          <button 
-            onClick={handleNext} 
-            disabled={currentStep === steps.length - 1}
-            className="control-btn"
-          >
-            Nästa →
-          </button>
+      <div className="controls">
+        <button 
+          onClick={handlePrevious} 
+          disabled={currentStep === 0}
+          className="control-btn"
+        >
+          ← Föregående
+        </button>
+        <div className="step-counter">
+          Steg {currentStep + 1} av {steps.length}
         </div>
+        <button 
+          onClick={handleNext} 
+          disabled={currentStep === steps.length - 1}
+          className="control-btn"
+        >
+          Nästa →
+        </button>
+      </div>
 
-        <div className="reset-section">
-          <button onClick={handleReset} className="reset-btn">
-            🎲 Nya slumptal
-          </button>
-        </div>
+      <div className="reset-section">
+        <button onClick={handleReset} className="reset-btn">
+          🎲 Nya slumptal
+        </button>
       </div>
     </div>
   );
