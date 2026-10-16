@@ -8,6 +8,12 @@ import './App.css'
 function App() {
   const [currentView, setCurrentView] = useState('multiplication')
 
+  const selectView = (view) => {
+    if (view === currentView) return
+    setCurrentView(view)
+    window.goatcounter?.count({ path: view, title: view, event: true })
+  }
+
   const renderContent = () => {
     switch(currentView) {
       case 'addition':
@@ -30,28 +36,28 @@ function App() {
         <div className="nav-buttons">
           <button 
             className={`nav-btn ${currentView === 'addition' ? 'active' : ''}`}
-            onClick={() => setCurrentView('addition')}
+            onClick={() => selectView('addition')}
           >
             <span className="nav-icon">+</span>
             <span className="nav-label">Addition</span>
           </button>
           <button 
             className={`nav-btn ${currentView === 'subtraction' ? 'active' : ''}`}
-            onClick={() => setCurrentView('subtraction')}
+            onClick={() => selectView('subtraction')}
           >
             <span className="nav-icon">−</span>
             <span className="nav-label">Subtraktion</span>
           </button>
           <button 
             className={`nav-btn ${currentView === 'multiplication' ? 'active' : ''}`}
-            onClick={() => setCurrentView('multiplication')}
+            onClick={() => selectView('multiplication')}
           >
             <span className="nav-icon">×</span>
             <span className="nav-label">Multiplikation</span>
           </button>
           <button 
             className={`nav-btn ${currentView === 'division' ? 'active' : ''}`}
-            onClick={() => setCurrentView('division')}
+            onClick={() => selectView('division')}
           >
             <span className="nav-icon">÷</span>
             <span className="nav-label">Division</span>

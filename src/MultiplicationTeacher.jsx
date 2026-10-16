@@ -95,11 +95,11 @@ function MultiplicationTeacher() {
         
         let description = `${multiplicandDigitName} × ${digit} = ${mDigit * digit}`;
         if (carry > 0) {
-          description += ` + ${carry} (rest) = ${product}`;
+          description += ` + ${carry} (minnessiffra) = ${product}`;
         }
         description += `. Skriv ${resultDigit} som ${positionName}`;
         if (newCarry > 0) {
-          description += ` och rest ${newCarry}`;
+          description += ` och minnessiffra ${newCarry}`;
         }
 
         // Build array of all carries including the new one (even if 0, but we'll filter later)
@@ -138,8 +138,8 @@ function MultiplicationTeacher() {
         const positionName = ['ental', 'tiotal', 'hundratal', 'tusental', 'tiotusental', 'hundratusental'][finalPosition] || `position ${finalPosition}`;
         
         steps.push({
-          title: `Skriv sista resten`,
-          description: `Resten ${carry} skrivs som ${positionName}`,
+          title: `Skriv sista minnessiffran`,
+          description: `Minnessiffran ${carry} skrivs som ${positionName}`,
           type: 'write-final-carry',
           rowIndex: rowIndex,
           digitIndex: multiplicandDigits.length,
@@ -260,7 +260,7 @@ function MultiplicationTeacher() {
           {/* Show carry digits above the calculation when in multiply-digit mode */}
           {(currentStepData.type === 'multiply-digit' || currentStepData.type === 'write-final-carry') && (
             <div className="carry-row">
-              <span className="carry-label">Rest:</span>
+              <span className="carry-label">Minnessiffror:</span>
               {currentCarries.length > 0 ? (
                 currentCarries.map((carry, idx) => {
                   // The last carry in the array is the newly created one
@@ -275,7 +275,7 @@ function MultiplicationTeacher() {
                   );
                 })
               ) : (
-                <div className="carry-empty">Inga rester än</div>
+                <div className="carry-empty">Inga minnessiffror än</div>
               )}
             </div>
           )}
